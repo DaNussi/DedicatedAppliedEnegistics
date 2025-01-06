@@ -1,5 +1,4 @@
 {
-  "itemGroup.dae2": "Example Mod Tab",
-  "block.dae2.example_block": "Example Block",
-  "item.dae2.example_item": "Example Item"
+  "itemGroup.dae2": "Dedicated Applied Energistics 2",
+  "block.dae2.inter_dimensional_interface": "Inter Dimensional Interface Block"
 }
