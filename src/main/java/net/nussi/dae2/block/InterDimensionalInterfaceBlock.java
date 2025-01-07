@@ -1,5 +1,8 @@
 package net.nussi.dae2.block;
 
+import appeng.api.orientation.IOrientationStrategy;
+import appeng.api.orientation.OrientationStrategies;
+import appeng.block.AEBaseEntityBlock;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -12,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +23,7 @@ import org.slf4j.Logger;
 
 import static net.nussi.dae2.Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY;
 
-public class InterDimensionalInterfaceBlock extends Block implements EntityBlock {
+public class InterDimensionalInterfaceBlock extends AEBaseEntityBlock<InterDimensionalInterfaceBlockEntity> {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public InterDimensionalInterfaceBlock(BlockBehaviour.Properties properties) {
@@ -27,24 +31,13 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new InterDimensionalInterfaceBlockEntity(blockPos, blockState);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
     }
 
-    @SuppressWarnings("unchecked") // Due to generics, an unchecked cast is necessary here.
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        // You can return different tickers here, depending on whatever factors you want. A common use case would be
-        // to return different tickers on the client or server, only tick one side to begin with,
-        // or only return a ticker for some blockstates (e.g. when using a "my machine is working" blockstate property).
-        return type == INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY.get() ? new BlockEntityTicker<T>() {
-            @Override
-            public void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {
-                if (t instanceof InterDimensionalInterfaceBlockEntity blockEntity) {
-                    blockEntity.tick();
-                }
-            }
-        } : null;
+    public IOrientationStrategy getOrientationStrategy() {
+        return OrientationStrategies.none();
     }
 
 }
