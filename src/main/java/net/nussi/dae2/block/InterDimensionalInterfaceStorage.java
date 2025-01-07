@@ -4,13 +4,15 @@ import appeng.api.config.Actionable;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.KeyCounter;
+import appeng.api.storage.IStorageMounts;
+import appeng.api.storage.IStorageProvider;
 import appeng.api.storage.MEStorage;
 import net.minecraft.network.chat.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class InterDimensionalInterfaceStorage implements MEStorage {
+public class InterDimensionalInterfaceStorage implements IStorageProvider, MEStorage {
     private final Map<AEKey, Long> inventory = new HashMap<>();
 
     @Override
@@ -57,5 +59,10 @@ public class InterDimensionalInterfaceStorage implements MEStorage {
     @Override
     public Component getDescription() {
         return Component.translatable("block.dae2.inter_dimensional_interface");
+    }
+
+    @Override
+    public void mountInventories(IStorageMounts storageMounts) {
+        storageMounts.mount(this);
     }
 }

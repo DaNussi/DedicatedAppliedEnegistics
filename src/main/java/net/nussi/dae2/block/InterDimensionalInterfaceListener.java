@@ -12,25 +12,30 @@ public class InterDimensionalInterfaceListener implements IGridNodeListener<Inte
     @Override
     public void onSaveChanges(InterDimensionalInterfaceBlockEntity nodeOwner, IGridNode node) {
 
+        LOGGER.info("Save changes");
     }
 
     @Override
     public void onInWorldConnectionChanged(InterDimensionalInterfaceBlockEntity nodeOwner, IGridNode node) {
         IGridNodeListener.super.onInWorldConnectionChanged(nodeOwner, node);
+        LOGGER.info("In world connection changed");
     }
 
     @Override
     public void onOwnerChanged(InterDimensionalInterfaceBlockEntity nodeOwner, IGridNode node) {
         IGridNodeListener.super.onOwnerChanged(nodeOwner, node);
+        LOGGER.info("Owner changed");
     }
 
     @Override
     public void onGridChanged(InterDimensionalInterfaceBlockEntity nodeOwner, IGridNode node) {
+        IGridNodeListener.super.onGridChanged(nodeOwner, node);
         LOGGER.info("Grid changed");
     }
 
     @Override
     public void onStateChanged(InterDimensionalInterfaceBlockEntity nodeOwner, IGridNode node, State state) {
         IGridNodeListener.super.onStateChanged(nodeOwner, node, state);
+        LOGGER.info("State changed");
     }
 }

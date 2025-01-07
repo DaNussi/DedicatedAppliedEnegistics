@@ -12,6 +12,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -35,7 +37,14 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
         // You can return different tickers here, depending on whatever factors you want. A common use case would be
         // to return different tickers on the client or server, only tick one side to begin with,
         // or only return a ticker for some blockstates (e.g. when using a "my machine is working" blockstate property).
-        return type == INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY.get() ? (BlockEntityTicker<T>) InterDimensionalInterfaceBlockEntity::tick : null;
+        return type == INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY.get() ? new BlockEntityTicker<T>() {
+            @Override
+            public void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {
+                if (t instanceof InterDimensionalInterfaceBlockEntity blockEntity) {
+                    blockEntity.tick();
+                }
+            }
+        } : null;
     }
 
 }
