@@ -1,10 +1,12 @@
 package net.nussi.dae2.block;
 
 
-import appeng.api.networking.GridFlags;
-import appeng.api.networking.IManagedGridNode;
+import appeng.api.AECapabilities;
+import appeng.api.networking.*;
 import appeng.api.storage.IStorageProvider;
+import appeng.api.util.AECableType;
 import appeng.me.ManagedGridNode;
+import appeng.me.helpers.IGridConnectedBlockEntity;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,12 +16,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.nussi.dae2.Register;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Set;
 
 
-public class InterDimensionalInterfaceBlockEntity extends BlockEntity {
+public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements IGridConnectedBlockEntity {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final IManagedGridNode mainNode = new ManagedGridNode(this, InterDimensionalInterfaceListener.INSTANCE);
     private final InterDimensionalInterfaceStorage storage = new InterDimensionalInterfaceStorage();
@@ -28,7 +31,6 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity {
         super(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY.get(), pos, state);
     }
 
-    // TODO: Implement destruction of mainNode when block entity gets destroyed
 
     private boolean firstTick = true;
     private void onFirstTick() {
@@ -41,6 +43,8 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity {
             mainNode.setFlags(GridFlags.REQUIRE_CHANNEL);
             mainNode.setVisualRepresentation(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ITEM.get());
             mainNode.create(getLevel(), getBlockPos());
+
+
         } else {
             LOGGER.warn("InterDimensionalInterfaceBlockEntity created without level");
         }
@@ -51,6 +55,37 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity {
             onFirstTick();
             firstTick = false;
         }
+    }
+
+    @Override
+    public IManagedGridNode getMainNode() {
+        return this.mainNode;
+    }
+
+    @Override
+    public @Nullable IGridNode getGridNode() {
+        return this.mainNode.getNode();
+    }
+
+    @Override
+    public @Nullable IGridNode getGridNode(Direction dir) {
+        return this.mainNode.getNode();
+    }
+
+
+
+    @Override
+    public void saveChanges() {
+    }
+
+    @Override
+    public void onMainNodeStateChanged(IGridNodeListener.State reason) {
+
+    }
+
+    @Override
+    public AECableType getCableConnectionType(Direction dir) {
+        return AECableType.COVERED;
     }
 
 
