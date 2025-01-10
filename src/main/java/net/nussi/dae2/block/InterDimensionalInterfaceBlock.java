@@ -1,9 +1,10 @@
 package net.nussi.dae2.block;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -12,8 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -25,6 +25,7 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
     public InterDimensionalInterfaceBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }
+
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
@@ -46,5 +47,23 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
             }
         } : null;
     }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if(!level.isClientSide()) return InteractionResult.PASS;
+
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if(blockEntity instanceof InterDimensionalInterfaceBlockEntity interDimensionalInterfaceBlockEntity) {
+
+
+            Minecraft.getInstance().setScreen(new InterDimensionalInterfaceScreen(level, pos, interDimensionalInterfaceBlockEntity, player));
+
+        } else {
+            LOGGER.info("BlockEntity at position {} is not an instance of InterDimensionalInterfaceBlockEntity", pos);
+        }
+
+        return InteractionResult.SUCCESS;
+    }
+
 
 }

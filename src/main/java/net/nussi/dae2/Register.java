@@ -2,6 +2,8 @@ package net.nussi.dae2;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -14,6 +16,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nussi.dae2.block.InterDimensionalInterfaceBlock;
 import net.nussi.dae2.block.InterDimensionalInterfaceBlockEntity;
+import net.nussi.dae2.block.InterDimensionalInterfaceScreen;
 
 import java.util.function.Supplier;
 
@@ -22,6 +25,7 @@ public class Register {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Dae2.MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Dae2.MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Dae2.MODID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, Dae2.MODID);
 
 
     public static final DeferredBlock<Block> INTER_DIMENSIONAL_INTERFACE_BLOCK = BLOCKS.registerBlock("inter_dimensional_interface", InterDimensionalInterfaceBlock::new);
