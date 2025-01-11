@@ -32,6 +32,7 @@ public class Dae2 {
     public Dae2(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(Events::registerScreens);
 
         Register.register(modEventBus);
 

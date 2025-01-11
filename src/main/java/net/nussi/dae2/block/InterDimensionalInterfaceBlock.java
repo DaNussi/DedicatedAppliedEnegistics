@@ -1,8 +1,8 @@
 package net.nussi.dae2.block;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -50,17 +50,16 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if(!level.isClientSide()) return InteractionResult.PASS;
-
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if(blockEntity instanceof InterDimensionalInterfaceBlockEntity interDimensionalInterfaceBlockEntity) {
+        if(! (blockEntity instanceof InterDimensionalInterfaceBlockEntity)) return InteractionResult.PASS;
+        InterDimensionalInterfaceBlockEntity parsedBlockEntity = (InterDimensionalInterfaceBlockEntity) blockEntity;
 
+        if(level.isClientSide()) return InteractionResult.SUCCESS;
 
-            Minecraft.getInstance().setScreen(new InterDimensionalInterfaceScreen(level, pos, interDimensionalInterfaceBlockEntity, player));
-
-        } else {
-            LOGGER.info("BlockEntity at position {} is not an instance of InterDimensionalInterfaceBlockEntity", pos);
+        if(player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.openMenu(parsedBlockEntity);
         }
+
 
         return InteractionResult.SUCCESS;
     }

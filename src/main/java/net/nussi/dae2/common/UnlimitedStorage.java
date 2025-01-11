@@ -22,7 +22,6 @@ public class UnlimitedStorage implements MEStorage, Storeable {
         this.description = description;
     }
 
-
     @Override
     public boolean isPreferredStorageFor(AEKey what, IActionSource source) {
         return false;
@@ -107,4 +106,5 @@ public class UnlimitedStorage implements MEStorage, Storeable {
         tag.putInt("size", inventory.size());
         tag.putString("description", this.description);
     }
+
 }

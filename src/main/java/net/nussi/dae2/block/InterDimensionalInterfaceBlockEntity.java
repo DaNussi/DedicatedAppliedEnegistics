@@ -12,17 +12,25 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.nussi.dae2.Register;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Set;
 import java.util.UUID;
 
 
-public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements IGridConnectedBlockEntity {
+public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements IGridConnectedBlockEntity, MenuProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final IManagedGridNode mainNode = new ManagedGridNode(this, BlockEntityNodeListener.INSTANCE);
     private final InterDimensionalInterfaceStorage storage = new InterDimensionalInterfaceStorage();
@@ -56,6 +64,10 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
         if(initData != null) loadAdditionalInternal(initData, initRegistries);
 
         this.isInitialized = true;
+    }
+
+    public InterDimensionalInterfaceStorage getStorage() {
+        return storage;
     }
 
     @Override
@@ -120,5 +132,18 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
         mainNode.destroy();
     }
 
+    public boolean isInitialized() {
+        return isInitialized;
+    }
 
+
+    @Override
+    public @NotNull Component getDisplayName() {
+        return Component.literal("block.dae2.inter_dimensional_interface");
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+        return new InterDimensionalInterfaceMenu(i, inventory, this);
+    }
 }
