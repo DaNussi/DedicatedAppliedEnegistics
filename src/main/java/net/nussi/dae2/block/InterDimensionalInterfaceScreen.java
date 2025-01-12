@@ -34,5 +34,17 @@ public class InterDimensionalInterfaceScreen extends AbstractContainerScreen<Int
         renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
 
+    @Override
+    protected void init() {
+        super.init();
 
+
+//        addRenderableWidget(
+//                Button.builder(Component.literal("Test"), (button) -> button.setMessage(Component.literal("Test2")))
+//                        .pos(width / 2, height / 2)
+//                        .size(200, 20)
+//                        .build()
+//        );
+
+    }
 }

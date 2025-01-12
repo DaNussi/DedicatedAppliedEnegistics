@@ -1,48 +1,48 @@
 package net.nussi.dae2.block;
 
+import com.mojang.logging.LogUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
 import net.nussi.dae2.Register;
+import org.slf4j.Logger;
 
 public class InterDimensionalInterfaceMenu extends AbstractContainerMenu {
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private final ContainerLevelAccess containerLevelAccess;
     private final InterDimensionalInterfaceBlockEntity blockEntity;
 
-    public InterDimensionalInterfaceMenu(int containerId, Inventory playerInventory) {
-        super(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_MENU.get(), containerId);
-
-        this.containerLevelAccess = null;
-        this.blockEntity = null;
-
-        createPlayerHotbar(playerInventory);
-        createPlayerInventory(playerInventory);
+    public InterDimensionalInterfaceMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
+        this(containerId, playerInventory, Minecraft.getInstance().level.getBlockEntity(extraData.readBlockPos()));
     }
 
     protected InterDimensionalInterfaceMenu(int containerId, Inventory playerInventory, BlockEntity blockEntity) {
         super(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_MENU.get(), containerId);
 
-        if(blockEntity instanceof InterDimensionalInterfaceBlockEntity) {
-            this.blockEntity = (InterDimensionalInterfaceBlockEntity) blockEntity;
+        if(blockEntity instanceof InterDimensionalInterfaceBlockEntity convertedBlockEntity) {
+            this.blockEntity = convertedBlockEntity;
+
+            this.containerLevelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
+
+            createPlayerHotbar(playerInventory);
+            createPlayerInventory(playerInventory);
+            createBlockInventory(convertedBlockEntity);
+
         } else {
             throw new IllegalArgumentException("BlockEntity is not an instance of InterDimensionalInterfaceBlockEntity");
         }
+    }
 
-        this.containerLevelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
 
-        createPlayerHotbar(playerInventory);
-        createPlayerInventory(playerInventory);
+    private void createBlockInventory(InterDimensionalInterfaceBlockEntity blockEntity) {
+        addSlot(new Slot(blockEntity.getStorage().getCellInventory(), 0, 100, 50));
+        addSlot(new Slot(blockEntity.getStorage().getCellInventory(), 1, 50, 50));
     }
 
     private void createPlayerInventory(Inventory playerInv) {
@@ -80,9 +80,9 @@ public class InterDimensionalInterfaceMenu extends AbstractContainerMenu {
 
         if(index < 36) {
             // We are inside of the player's inventory
-            if(!moveItemStackTo(fromStack, 36, 63, false))
+            if(!moveItemStackTo(fromStack, 36, 37, false))
                 return ItemStack.EMPTY;
-        } else if (index < 63) {
+        } else if (index < 37) {
             // We are inside of the block entity inventory
             if(!moveItemStackTo(fromStack, 0, 36, false))
                 return ItemStack.EMPTY;

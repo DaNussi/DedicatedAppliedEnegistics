@@ -1,13 +1,19 @@
 package net.nussi.dae2.block;
 
 
+import appeng.api.inventories.InternalInventory;
 import appeng.api.networking.*;
+import appeng.api.networking.security.IActionHost;
 import appeng.api.storage.IStorageProvider;
 import appeng.api.util.AECableType;
+import appeng.core.definitions.AEItems;
 import appeng.me.ManagedGridNode;
 import appeng.me.helpers.BlockEntityNodeListener;
 import appeng.me.helpers.IGridConnectedBlockEntity;
+import appeng.util.inv.AppEngInternalInventory;
+import appeng.util.inv.InternalInventoryHost;
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -18,6 +24,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,10 +37,10 @@ import java.util.Set;
 import java.util.UUID;
 
 
-public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements IGridConnectedBlockEntity, MenuProvider {
+public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements IGridConnectedBlockEntity, MenuProvider, Tickable {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final IManagedGridNode mainNode = new ManagedGridNode(this, BlockEntityNodeListener.INSTANCE);
-    private final InterDimensionalInterfaceStorage storage = new InterDimensionalInterfaceStorage();
+    private final InterDimensionalInterfaceStorage storage = new InterDimensionalInterfaceStorage(this);
 
     private CompoundTag initData = null;
     private HolderLookup.Provider initRegistries = null;
@@ -43,9 +50,10 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
         super(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY.get(), pos, state);
     }
 
-
+    @Override
     public void tick() {
         if(!isInitialized) initialize();
+        storage.tick();
     }
 
     private void initialize() {
@@ -58,6 +66,8 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
         mainNode.addService(IStorageProvider.class, storage);
         mainNode.setExposedOnSides(Set.of(Direction.values()));
         mainNode.setFlags(GridFlags.REQUIRE_CHANNEL);
+        mainNode.setIdlePowerUsage(200);
+        mainNode.setTagName("inter_dimensional_interface");
         mainNode.setVisualRepresentation(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ITEM.get());
         mainNode.create(getLevel(), getBlockPos());
 
@@ -74,6 +84,7 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
     public IManagedGridNode getMainNode() {
         return this.mainNode;
     }
+
     @Override
     public void saveChanges() {
 
@@ -126,11 +137,13 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
         mainNode.destroy();
     }
 
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        mainNode.destroy();
-    }
+//    @Override
+//    public void setRemoved() {
+//        super.setRemoved();
+//        mainNode.destroy();
+//    }
+
+
 
     public boolean isInitialized() {
         return isInitialized;
@@ -146,4 +159,5 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
         return new InterDimensionalInterfaceMenu(i, inventory, this);
     }
+
 }

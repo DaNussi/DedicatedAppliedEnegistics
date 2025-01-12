@@ -3,9 +3,13 @@ package net.nussi.dae2.block;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -13,9 +17,12 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 import static net.nussi.dae2.Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY;
 
@@ -29,6 +36,8 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+
+        // TODO: Implement newBlockEntity. Prevent double creation of block entity.
         return new InterDimensionalInterfaceBlockEntity(blockPos, blockState);
     }
 
@@ -57,12 +66,30 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
         if(level.isClientSide()) return InteractionResult.SUCCESS;
 
         if(player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(parsedBlockEntity);
+            serverPlayer.openMenu(parsedBlockEntity, pos);
         }
 
-
-        return InteractionResult.SUCCESS;
+        return InteractionResult.CONSUME;
     }
 
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if(level.isClientSide()) return;
+        BlockEntity blockEntity = level.getBlockEntity(pos);
 
+        if (blockEntity instanceof InterDimensionalInterfaceBlockEntity parsedBlockEntity) {
+            Container inventory = parsedBlockEntity.getStorage().getCellInventory();
+            for (int slotIndex = 0; slotIndex < inventory.getContainerSize(); slotIndex++) {
+                ItemStack itemStack = inventory.getItem(slotIndex);
+                if (!itemStack.isEmpty()) {
+                    ItemStack stack = inventory.getItem(slotIndex);
+                    ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, stack);
+                    level.addFreshEntity(entity);
+                }
+            }
+
+        }
+
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
 }
