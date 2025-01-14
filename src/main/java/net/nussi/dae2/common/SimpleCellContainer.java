@@ -8,7 +8,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.UnknownNullability;
 import org.slf4j.Logger;
 

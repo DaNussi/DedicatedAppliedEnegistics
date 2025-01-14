@@ -5,8 +5,6 @@ import appeng.api.storage.StorageCells;
 import appeng.util.inv.filter.IAEItemFilter;
 import net.minecraft.world.item.ItemStack;
 
-import java.io.StringReader;
-
 public class ItemFilters {
     /**
      * Filters for items handled by {@link StorageCells}

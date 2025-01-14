@@ -1,20 +1,18 @@
 package net.nussi.dae2.block;
 
 
-import appeng.api.inventories.InternalInventory;
-import appeng.api.networking.*;
-import appeng.api.networking.security.IActionHost;
+import appeng.api.networking.GridFlags;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.IGridNodeListener;
+import appeng.api.networking.IManagedGridNode;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IStorageProvider;
 import appeng.api.util.AECableType;
-import appeng.core.definitions.AEItems;
 import appeng.me.ManagedGridNode;
 import appeng.me.helpers.BlockEntityNodeListener;
 import appeng.me.helpers.IGridConnectedBlockEntity;
-import appeng.util.inv.AppEngInternalInventory;
-import appeng.util.inv.InternalInventoryHost;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.core.BlockPos;
@@ -26,8 +24,6 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Set;
-import java.util.UUID;
 
 
 public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements IGridConnectedBlockEntity, MenuProvider, IGridTickable, Tickable {
