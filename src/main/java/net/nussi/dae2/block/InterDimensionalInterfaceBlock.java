@@ -22,12 +22,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static net.nussi.dae2.Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY;
 
 public class InterDimensionalInterfaceBlock extends Block implements EntityBlock {
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final HashMap<BlockPos, BlockEntity> blockEntities = new HashMap<>();
+
 
     public InterDimensionalInterfaceBlock(BlockBehaviour.Properties properties) {
         super(properties);
@@ -37,8 +40,17 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
 
-        // TODO: Implement newBlockEntity. Prevent double creation of block entity.
         return new InterDimensionalInterfaceBlockEntity(blockPos, blockState);
+
+//        if(blockEntities.containsKey(blockPos)) {
+//            LOGGER.info("Found existing InterDimensionalInterfaceBlockEntity at {}", blockPos);
+//            return blockEntities.get(blockPos);
+//        } else {
+//            BlockEntity blockEntity = new InterDimensionalInterfaceBlockEntity(blockPos, blockState);
+//            blockEntities.put(blockPos, blockEntity);
+//            LOGGER.info("Created new InterDimensionalInterfaceBlockEntity at {}", blockPos);
+//            return blockEntity;
+//        }
     }
 
     @SuppressWarnings("unchecked") // Due to generics, an unchecked cast is necessary here.
@@ -89,6 +101,9 @@ public class InterDimensionalInterfaceBlock extends Block implements EntityBlock
             }
 
         }
+
+        blockEntities.remove(pos);
+        LOGGER.info("Removed InterDimensionalInterfaceBlockEntity at {}", pos);
 
         super.onRemove(state, level, pos, newState, movedByPiston);
     }

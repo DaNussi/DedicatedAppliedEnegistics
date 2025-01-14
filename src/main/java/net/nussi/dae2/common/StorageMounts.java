@@ -5,6 +5,7 @@ import appeng.api.storage.IStorageProvider;
 import appeng.api.storage.MEStorage;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class StorageMounts implements IStorageMounts {
@@ -27,7 +28,7 @@ public class StorageMounts implements IStorageMounts {
     }
 
     public List<MEStorage> toList() {
-        return storageMounts.values().stream().reduce(List.of(), (a, b) -> {
+        return storageMounts.values().stream().reduce(new LinkedList<>(), (a, b) -> {
             a.addAll(b);
             return a;
         });

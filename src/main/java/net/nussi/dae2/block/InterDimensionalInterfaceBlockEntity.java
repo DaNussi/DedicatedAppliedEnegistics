@@ -4,6 +4,9 @@ package net.nussi.dae2.block;
 import appeng.api.inventories.InternalInventory;
 import appeng.api.networking.*;
 import appeng.api.networking.security.IActionHost;
+import appeng.api.networking.ticking.IGridTickable;
+import appeng.api.networking.ticking.TickRateModulation;
+import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IStorageProvider;
 import appeng.api.util.AECableType;
 import appeng.core.definitions.AEItems;
@@ -37,7 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 
 
-public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements IGridConnectedBlockEntity, MenuProvider, Tickable {
+public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements IGridConnectedBlockEntity, MenuProvider, IGridTickable, Tickable {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final IManagedGridNode mainNode = new ManagedGridNode(this, BlockEntityNodeListener.INSTANCE);
     private final InterDimensionalInterfaceStorage storage = new InterDimensionalInterfaceStorage(this);
@@ -50,12 +53,6 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
         super(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY.get(), pos, state);
     }
 
-    @Override
-    public void tick() {
-        if(!isInitialized) initialize();
-        storage.tick();
-    }
-
     private void initialize() {
         Level level = getLevel();
 
@@ -64,12 +61,15 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
 
         mainNode.setInWorldNode(true);
         mainNode.addService(IStorageProvider.class, storage);
+        mainNode.addService(IGridTickable.class, this);
         mainNode.setExposedOnSides(Set.of(Direction.values()));
         mainNode.setFlags(GridFlags.REQUIRE_CHANNEL);
         mainNode.setIdlePowerUsage(200);
-        mainNode.setTagName("inter_dimensional_interface");
+        mainNode.setTagName("mainNode");
         mainNode.setVisualRepresentation(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ITEM.get());
         mainNode.create(getLevel(), getBlockPos());
+        LOGGER.info("Main node created! Main node is ready: {} | online: {} | active: {} | powered: {}", mainNode.isReady(), mainNode.isOnline(), mainNode.isActive(), mainNode.isPowered());
+
 
         if(initData != null) loadAdditionalInternal(initData, initRegistries);
 
@@ -135,13 +135,14 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
         mainNode.destroy();
+        LOGGER.info("Destroyed main node");
     }
 
-//    @Override
-//    public void setRemoved() {
-//        super.setRemoved();
-//        mainNode.destroy();
-//    }
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        mainNode.destroy();
+    }
 
 
 
@@ -160,4 +161,27 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
         return new InterDimensionalInterfaceMenu(i, inventory, this);
     }
 
+    @Override
+    public TickingRequest getTickingRequest(IGridNode node) {
+        return new TickingRequest(1, 1, false, 1);
+    }
+
+    @Override
+    public TickRateModulation tickingRequest(IGridNode node, int ticksSinceLastCall) {
+        storage.tick();
+
+        return TickRateModulation.SAME;
+    }
+
+    @Override
+    public void onMainNodeStateChanged(IGridNodeListener.State reason) {
+        IGridConnectedBlockEntity.super.onMainNodeStateChanged(reason);
+
+        LOGGER.info("Main node state changed because {}. Main node state is ready: {} | online: {} | active: {} | powered: {}", reason.toString(), mainNode.isReady(), mainNode.isOnline(), mainNode.isActive(), mainNode.isPowered());
+    }
+
+    @Override
+    public void tick() {
+        if(!isInitialized) initialize();
+    }
 }
