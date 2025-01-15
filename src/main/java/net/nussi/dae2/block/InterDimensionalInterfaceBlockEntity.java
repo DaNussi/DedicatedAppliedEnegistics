@@ -44,6 +44,9 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
     private HolderLookup.Provider initRegistries = null;
     private boolean isInitialized = false;
 
+    private String networkID = "a";
+    private String storageID = "a";
+
     public InterDimensionalInterfaceBlockEntity(BlockPos pos, BlockState state) {
         super(Register.INTER_DIMENSIONAL_INTERFACE_BLOCK_ENTITY.get(), pos, state);
     }
@@ -145,6 +148,13 @@ public class InterDimensionalInterfaceBlockEntity extends BlockEntity implements
         return isInitialized;
     }
 
+    public String getStorageID() {
+        return storageID;
+    }
+
+    public String getNetworkID() {
+        return networkID;
+    }
 
     @Override
     public @NotNull Component getDisplayName() {

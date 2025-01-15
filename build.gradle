@@ -115,20 +115,23 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-     // AE2
-     compileOnly "appeng:appliedenergistics2-neoforge:${ae2_version}:api"
-     compileOnly "appeng:appliedenergistics2-neoforge:${ae2_version}"
-     runtimeOnly "appeng:appliedenergistics2-neoforge:${ae2_version}:api"
-     runtimeOnly "appeng:appliedenergistics2-neoforge:${ae2_version}"
+    // AE2
+    compileOnly "appeng:appliedenergistics2-neoforge:${ae2_version}:api"
+    compileOnly "appeng:appliedenergistics2-neoforge:${ae2_version}"
+    runtimeOnly "appeng:appliedenergistics2-neoforge:${ae2_version}:api"
+    runtimeOnly "appeng:appliedenergistics2-neoforge:${ae2_version}"
 
-//    REDIS DB
+    // Database
+    compileOnly "com.rabbitmq:amqp-client:${rabbitmq_version}"
+    runtimeOnly "com.rabbitmq:amqp-client:${rabbitmq_version}"
+    jarJar(implementation(group: "com.rabbitmq", name: "amqp-client", version: "${rabbitmq_version}"))
+    additionalRuntimeClasspath "com.rabbitmq:amqp-client:${rabbitmq_version}"
 //    compileOnly "redis.clients:jedis:${redis_version}"
 //    minecraftLibrary  jarJar('org.apache.commons:commons-pool2:2.11.1')
-//    minecraftLibrary jarJar(group: 'com.rabbitmq', name: 'amqp-client', version: '5.20.0')
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
